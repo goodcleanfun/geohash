@@ -1,0 +1,16 @@
+{
+    "name": "geohash",
+    "version": "0.0.0",
+    "repo": "goodcleanfun/geohash",
+    "description": "Geohash encoder/decoder with neighbors, centroids, and tile polygons",
+    "keywords": [],
+    "license": "MIT",
+    "development": {
+      "silentbicycle/greatest": "*"
+    },
+    "src": [
+      "src/geohash.h",
+      "src/geohash.c"
+    ]
+    
+  }
