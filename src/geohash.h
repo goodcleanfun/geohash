@@ -16,4 +16,6 @@ bool geohash_decode(const char *buf, size_t len, double *lat, double *lon);
 // Adds a null terminator to the end of the buffer. Returns true on success,
 bool geohash_encode(double lat, double lon, size_t precision, char *buf);
 
+bool geohash_bounds(const char *buf, size_t len, double *south, double *west, double *north, double *east);
+
 #endif

@@ -361,3 +361,30 @@ bool geohash_encode(double lat, double lon, size_t precision, char *buf) {
     return true;
 }
 
+
+static inline size_t geohash_latitude_bits(size_t hashcode_len) {
+    return (hashcode_len / 2 * 5 + hashcode_len % 2 * 2);
+}
+
+static inline size_t geohash_longitude_bits(size_t hashcode_len) {
+    return (hashcode_len / 2 * 5 + hashcode_len % 2 * 3);
+}
+
+
+bool geohash_bounds(const char *buf, size_t len, double *south, double *west, double *north, double *east) {
+    double lat;
+    double lon;
+    if (!geohash_decode(buf, len, &lat, &lon)) {
+        return false;
+    }
+
+    size_t lat_bits = geohash_latitude_bits(len);
+    size_t lon_bits = geohash_longitude_bits(len);
+	double lat_delta = 180.0/(double) (1<<lat_bits);
+    double lon_delta = 360.0/(double) (1<<lon_bits);
+    *south = lat - (lat_delta / 2.0);
+    *north = lat + (lat_delta / 2.0);
+    *west = lon - (lon_delta / 2.0);
+    *east = lon + (lon_delta / 2.0);
+    return true;
+}
