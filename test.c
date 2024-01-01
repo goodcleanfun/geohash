@@ -180,6 +180,19 @@ TEST test_geohash_encode_decode(void) {
         ASSERT_EQ(tests[i].lon, lon);
     }
 
+    double south, west, north, east;
+    ASSERT(geohash_bounds("zrfspt", 6, &south, &west, &north, &east));
+    ASSERT_EQ(south, 89.3243408203125);
+    ASSERT_EQ(west, 150.09521484375);
+    ASSERT_EQ(north, 89.329833984375);
+    ASSERT_EQ(east, 150.106201171875);
+
+    ASSERT(geohash_bounds("50kb4162ks10g95emn5v", 20, &south, &west, &north, &east));
+    ASSERT_EQ(south, -88.58716236312856);
+    ASSERT_EQ(west, -38.22982400409232);
+    ASSERT_EQ(north, -88.58647571762074);
+    ASSERT_EQ(east, -38.2284507130767);
+
     for (size_t i = 0; i < num_tests; i++) {
         char buf[22] = {0};
         geohash_encode(tests[i].lat, tests[i].lon, strlen(tests[i].h), buf);
