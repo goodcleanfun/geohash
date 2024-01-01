@@ -173,9 +173,9 @@ static const struct {
 static const size_t num_tests = sizeof(tests) / sizeof(*tests);
 
 TEST test_geohash_encode_decode(void) {
+    double lat, lon;
     for (size_t i = 0; i < num_tests; i++) {
-        double lat, lon;
-        geohash_decode(&lat, &lon, tests[i].h, tests[i].len);
+        ASSERT(geohash_decode(tests[i].h, tests[i].len, &lat, &lon));
         ASSERT_EQ(tests[i].lat, lat);
         ASSERT_EQ(tests[i].lon, lon);
     }

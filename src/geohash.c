@@ -1,6 +1,6 @@
 #include "geohash.h"
 
-bool geohash_decode(double *lat, double *lon, const char *buf, size_t len) {
+bool geohash_decode(const char *buf, size_t len, double *lat, double *lon) {
     static const signed char b32[256] = {
         -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
         -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -19,7 +19,7 @@ bool geohash_decode(double *lat, double *lon, const char *buf, size_t len) {
         -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
         -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
     };
-    static const short deinterleave[1024] = {
+    static const int16_t deinterleave[1024] = {
         0x000, 0x001, 0x020, 0x021, 0x002, 0x003, 0x022, 0x023,
         0x040, 0x041, 0x060, 0x061, 0x042, 0x043, 0x062, 0x063,
         0x004, 0x005, 0x024, 0x025, 0x006, 0x007, 0x026, 0x027,
@@ -151,8 +151,8 @@ bool geohash_decode(double *lat, double *lon, const char *buf, size_t len) {
     };
 
     len = len > 21 ? 21 : len;
-    long long blat = 0;
-    long long blon = 0;
+    int64_t blat = 0;
+    int64_t blon = 0;
 
     // Note: This has been optimized for decoding shorter geohashes by
     // bailing out early when input ends. The benchmark shows that this is
@@ -169,8 +169,8 @@ bool geohash_decode(double *lat, double *lon, const char *buf, size_t len) {
             return false;
         }
         int c = deinterleave[hi<<5 | lo];
-        blat |= (long long)(c & 0x01f) << (55 - i/2*5);
-        blon |= (long long)(c & 0x3e0) << (50 - i/2*5);
+        blat |= (int64_t)(c & 0x01f) << (55 - i/2*5);
+        blon |= (int64_t)(c & 0x3e0) << (50 - i/2*5);
     }
 
     // Handle tail byte, if any
@@ -180,8 +180,8 @@ bool geohash_decode(double *lat, double *lon, const char *buf, size_t len) {
             return false;
         }
         int c = deinterleave[hi<<5];
-        blat |= (long long)(c & 0x01f) << (55 - len/2*5);
-        blon |= (long long)(c & 0x3e0) << (50 - len/2*5);
+        blat |= (int64_t)(c & 0x01f) << (55 - len/2*5);
+        blon |= (int64_t)(c & 0x3e0) << (50 - len/2*5);
     }
 
     // The bottom 5 bits are unused. Everything was done higher to simplify
@@ -203,7 +203,7 @@ bool geohash_decode(double *lat, double *lon, const char *buf, size_t len) {
 
 
 bool geohash_encode(double lat, double lon, size_t precision, char *buf) {
-    static const short interleave_b32[1024] = {
+    static const int64_t interleave_b32[1024] = {
         0x3030, 0x3031, 0x3034, 0x3035, 0x3068, 0x306a, 0x306e, 0x3070,
         0x3230, 0x3231, 0x3234, 0x3235, 0x3268, 0x326a, 0x326e, 0x3270,
         0x3830, 0x3831, 0x3834, 0x3835, 0x3868, 0x386a, 0x386e, 0x3870,
